@@ -3,14 +3,17 @@ var keys = require("./keys.js");
 var Spotify = require("node-spotify-api");
 var axios = require("axios");
 var fs = require("fs");
+var userAction = process.argv[2];
+var userInput = process.argv[3]
 
-if (process.argv[2] === "movie-this") {
-    var movieName = process.argv[3];
-    var movieUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&language=&actors=&country=&tomatoRating=&tomatoes=true&apikey=trilogy";
+
+if (userAction === "movie-this") {
+    var userInput = process.argv[3];
+    var movieUrl = "http://www.omdbapi.com/?t=" + userInput + "&y=&plot=short&language=&actors=&country=&tomatoRating=&tomatoes=true&apikey=trilogy";
     console.log(movieUrl);
 
-    if (movieName = undefined) {
-        movieName = "mr. nobody"
+    if (userInput = undefined) {
+        userInput = "mr. nobody"
     }
 
     axios.get(movieUrl).then(
@@ -27,29 +30,28 @@ if (process.argv[2] === "movie-this") {
         })
 }
 
-else if (process.argv[2] === "spotify-this") {
+else if (userAction === "spotify-this") {
     var spotify = new Spotify(keys.spotify)
-    var songName = process.argv[3];
-    if (songName = undefined) {
-        songName = "the sign";
+    var userInput = process.argv[3];
+    if (userInput = undefined) {
+        userInput = "the sign";
     }
-    spotify.search({ type: "track", query: songName }, function (err, data) {
+    spotify.search({ type: "track", query: userInput }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-
         console.log("Artist(s): " + data.tracks.artists);
         console.log("Song name: " + data.tracks.track);
         console.log("Preview link: " + data.tracks.preview_url);
-        console.log("Album: " + data.tracks.album)
+        console.log("Album: " + data.tracks.album.name)
         console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     })
 }
 
 
-else if (process.argv[2] === "concert-this") {
-    var artist = process.argv[3];
-    var bandsUrl = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp&date=upcoming";
+else if (userAction === "concert-this") {
+    var userInput = process.argv[3];
+    var bandsUrl = "https://rest.bandsintown.com/artists/" + userInput + "/events?app_id=codingbootcamp&date=upcoming";
     console.log(bandsUrl);
 
     axios.get(bandsUrl).then(
@@ -62,9 +64,12 @@ else if (process.argv[2] === "concert-this") {
         })
 }
 
-else if (process.argv[2] === "do-what-it-says") {
-    fs.readFile("random.txt", "utf8", function(err, data) {
+else if (userAction === "do-what-it-says") {
+    fs.readFile("random.txt", "utf8", function (err, data) {
         if (err) {
-          return console.log(err);
+            return console.log(err);
         }
-}
+        var textArr = data.split(",");
+        userAction = textArr[0];
+        userInput = textArr[1];
+    })}
